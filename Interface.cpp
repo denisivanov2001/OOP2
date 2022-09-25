@@ -21,7 +21,6 @@ void Rectangle::writeFigure(std::ofstream& stream)
 	stream << "Left up x: " << this->leftUp[0] << " Left up y: " << this->leftUp[1] << "\n";
 	stream << "Right down x: " << this->rightDown[0] << " Right down y: " << this->rightDown[1] << "\n";
 	stream << "Color " << this->color << "\n";
-	stream << "Density " << this->density << "\n";
 	return;
 }
 
@@ -33,7 +32,12 @@ void Rectangle::readFigure(std::ifstream& stream)
 	stream >> this->rightDown[0];
 	stream >> this->rightDown[1];
 	stream >> this->color;
-	stream >> this->density;
+	
+}
+
+double Rectangle::perimetr()
+{
+	return (this->leftUp[0]-this->rightDown[0])*(this->rightDown[1]-this->leftUp[1]);
 }
 
 Circle::Circle()
@@ -57,7 +61,6 @@ void Circle::writeFigure(std::ofstream& stream)
 	stream << "Center: " << this->center[0] << " " << this->center[1] << "\n";
 	stream << "Radius " << this->radius << "\n";
 	stream << "Color " << this->color << "\n";
-	stream << "Density " << this->density << "\n";
 }
 
 void Circle::readFigure(std::ifstream& stream)
@@ -68,7 +71,12 @@ void Circle::readFigure(std::ifstream& stream)
 	stream >> this->center[1];
 	stream >> this->radius;
 	stream >> this->color;
-	stream >> this->density;
+	
+}
+
+double Circle::perimetr()
+{
+	return 2.0*M_PI*this->radius;
 }
 
 
@@ -142,6 +150,7 @@ void Element::writeElement(std::ofstream& stream)
 	default:
 		break;
 	}
+	stream<<"Perimetr "<<this->itFigure->perimetr()<<"\n";
 	return;
 }
 
