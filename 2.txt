@@ -1,24 +1,20 @@
 List:
-Num 6
-0: Left up x: 3 Left up y: -9
-Right down x: 8 Right down y: 5
+Num 4
+0: Left up x: 8 Left up y: -9
+Right down x: 3 Right down y: 5
 Color Red
+Perimetr 70
 1: Center: 9 6
 Radius 78
 Color Blue
-2: First 7 8
-First 1 8
-First 4 5
-Color Pink
-3: Left up x: 9 Left up y: 9
+Perimetr 490.088
+2: Left up x: 9 Left up y: 9
 Right down x: 9 Right down y: 9
 Color Yellow
-4: Center: 9 9
+Perimetr 0
+3: Center: 9 9
 Radius 0
 Color Green
-5: First 8 5
-First 7 6
-First 7 8
-Color Red
+Perimetr 0
 Delete list:
 Num 0
