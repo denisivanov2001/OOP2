@@ -8,14 +8,17 @@ int main()
 	ofstream write;
 	read.open("1.txt");
 	write.open("2.txt");
-	list* clientList=new list;
-	init(clientList);
-	readList(clientList, read);
+	List* clientList = new List();
+	
+	clientList->readList( read);
 	write << "List:\n";
-	writeList(clientList, write);
+	clientList->writeList( write);
+	write << "Sorted:\n";
+	clientList = clientList->sort();
+	clientList->writeList(write);
 	write << "Delete list:\n";
-	clear(clientList);
-	writeList(clientList, write);
+	clientList->clear();
+	clientList->writeList( write);
 	read.close();
 	write.close();
 	return 1;
