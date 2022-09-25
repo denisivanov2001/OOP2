@@ -1,189 +1,277 @@
 #include "Interface.h"
 
-
-
-void pushBack(list* oldList, element* newElement)
+Rectangle::Rectangle()
 {
-    newElement->prev = oldList->tail;
-    newElement->next = nullptr;
-    if (oldList->size)
-    {
-        oldList->tail->next = newElement;
-        oldList->tail = newElement;
-    }
-    else
-    {
-        oldList->tail = newElement;
-        oldList->head = newElement;
-    }
-    oldList->size++;
-    return ;
+	
+	color = "";
 }
 
-void pushFirst(list* oldList, element* newElement)
+int* Rectangle::getLeftUp()
 {
-    newElement->next = oldList->head;
-    newElement->prev = nullptr;
-    oldList->head->prev = newElement;
-    oldList->size++;
-    return;
+	return leftUp;
 }
 
-void init(list* curList)
+int* Rectangle::getRightDown()
 {
-    
-    curList->head = nullptr;
-    curList->tail = nullptr;
-    return ;
+	return rightDown;
 }
 
-void clear(list* oldList)
+void Rectangle::writeFigure(std::ofstream& stream)
 {
-    auto curEl = oldList->head;
-    while (curEl!=nullptr)
-    {
-        oldList->head->prev = nullptr;
-        oldList->head = oldList->head->next;
-        
-        
-       delete curEl;
-        curEl = oldList->head;
-    }
-    oldList->size = 0;
+	stream << "Left up x: " << this->leftUp[0] << " Left up y: " << this->leftUp[1] << "\n";
+	stream << "Right down x: " << this->rightDown[0] << " Right down y: " << this->rightDown[1] << "\n";
+	stream << "Color " << this->color << "\n";
+	return;
 }
-void readList(list*& readList, std::ifstream& stream)
+
+void Rectangle::readFigure(std::ifstream& stream)
 {
-	while (!stream.eof())
+	this->key = rect;
+	stream >> this->leftUp[0];
+	stream >> this->leftUp[1];
+	stream >> this->rightDown[0];
+	stream >> this->rightDown[1];
+	stream >> this->color;
+	
+}
+
+Circle::Circle()
+{
+	
+	color = "";
+}
+
+int* Circle::getCenter()
+{
+	return center;
+}
+
+int Circle::getRadius()
+{
+	return radius;
+}
+
+void Circle::writeFigure(std::ofstream& stream)
+{
+	stream << "Center: " << this->center[0] << " " << this->center[1] << "\n";
+	stream << "Radius " << this->radius << "\n";
+	stream << "Color " << this->color << "\n";
+}
+
+void Circle::readFigure(std::ifstream& stream)
+{
+	
+	this->key = cir;
+	stream >> this->center[0];
+	stream >> this->center[1];
+	stream >> this->radius;
+	stream >> this->color;
+	
+}
+
+
+
+string Figure::getColor()
+{
+	return color;
+}
+
+type Figure::getKey()
+{
+	return key;
+}
+
+Element::Element()
+{
+	itFigure = nullptr;
+	next = nullptr;
+	prev = nullptr;
+}
+
+Element::~Element()
+{
+	delete itFigure;
+}
+
+void Element::setItFigure(Figure* inItFigure)
+{
+	itFigure = inItFigure;
+}
+
+void Element::setNext(Element* inNext)
+{
+	next = inNext;
+}
+
+void Element::setPrev(Element* inPrev)
+{
+	prev = inPrev;
+}
+
+Figure* Element::getItFigure()
+{
+	return itFigure;
+}
+
+Element* Element::getNext()
+{
+	return next;
+}
+
+Element* Element::getPrev()
+{
+	return prev;
+}
+
+void Element::writeElement(std::ofstream& stream)
+{
+	switch (this->itFigure->getKey())
 	{
-		element* newElement = new element;
-		if (readElement(newElement, stream))
-		{
-			pushBack(readList, newElement);
-		}
+	case rect:
+	{
+		((Rectangle*)this->itFigure)->writeFigure(stream);
+		break;
 	}
+	case cir:
+	{
+		((Circle*)this->itFigure)->writeFigure(stream);
+		break;
+	}
+	default:
+		break;
+	}
+	return;
 }
 
-int readElement(element*& readElement, std::ifstream& stream)
+int Element::readElement(std::ifstream& stream)
 {
-	readElement->itFigure = new figure;
 	char type;
 	stream >> type;
 	switch (type)
 	{
 	case 'r':
 	{
-		readElement->itFigure = (figure*)readRectangle(stream);
-		stream >> ((rectangle*)readElement->itFigure)->color;
-		return 1;
+		this->itFigure = new Rectangle();
+		
+		break;
 	}
 	case 'c':
 	{
-		readElement->itFigure = (figure*)readCircle(stream);
-		stream >> ((circle*)readElement->itFigure)->color;
-		return 1;
-	}
-	case 't':
-	{
-		readElement->itFigure = (figure*)readTriangle(stream);
-		stream >> ((triangle*)readElement->itFigure)->color;
-		return 1;
-	}
-	default:
+		this->itFigure = new Circle();
+		
 		break;
 	}
-	return 0;
+	default:
+		return 0;
+	}
+	this->itFigure->readFigure(stream);
+	return 1;
 }
 
-rectangle* readRectangle(std::ifstream& stream)
+List::List()
 {
-	rectangle* newRect = new rectangle();
-	newRect->key = rect;
-	stream >> newRect->leftUp[0];
-	stream >> newRect->leftUp[1];
-	stream >> newRect->rightDown[0];
-	stream >> newRect->rightDown[1];
-	return newRect;
+	this->head = nullptr;
+	this->tail = nullptr;
+	size = 0;
+	return;
 }
 
-circle* readCircle(std::ifstream& stream)
+List::~List()
 {
-	circle* newCir = new circle();
-	newCir->key = cir;
-	stream >> newCir->center[0];
-	stream >> newCir->center[1];
-	stream >> newCir->radius;
-	return newCir;
+	clear();
 }
 
-triangle* readTriangle(std::ifstream& stream)
+void List::setHead(Element* inHead)
 {
-	triangle* newTri = new triangle();
-	newTri->key = tri;
-	stream >> newTri->first[0];
-	stream >> newTri->first[1];
-	stream >> newTri->second[0];
-	stream >> newTri->second[1];
-	stream >> newTri->third[0];
-	stream >> newTri->third[1];
-	return newTri;
+	this->head = inHead;
 }
 
-void writeList(list*& writeList, std::ofstream& stream)
+void List::setTail(Element* inTail)
 {
-	stream << "Num " << writeList->size << "\n";
-	auto curEl = writeList->head;
-	for (int i = 0; i < writeList->size; i++)
+	this->tail = inTail;
+}
+
+Element* List::getHead()
+{
+	return head;
+}
+
+Element* List::getTail()
+{
+	return tail;
+}
+
+void List::pushBack(Element* newElement)
+{
+	newElement->setPrev(this->tail) ;
+	if (this->size)
+	{
+		this->tail->setNext(newElement) ;
+		this->tail = newElement;
+	}
+	else
+	{
+		this->tail = newElement;
+		this->head = newElement;
+	}
+	this->size++;
+	return;
+}
+
+void List::readList(std::ifstream& stream)
+{
+	while (!stream.eof())
+	{
+		Element* newElement = new Element();
+		if (newElement->readElement(stream) )
+		{
+			this->pushBack( newElement);
+		}
+	}
+}
+
+void List::writeList(std::ofstream& stream)
+{
+	stream << "Num " << this->size << "\n";
+	auto curEl = this->head;
+	for (int i = 0; i < this->size; i++)
 	{
 		stream << i << ": ";
-		writeElement(curEl, stream);
-		curEl = curEl->next;
+		curEl->writeElement( stream);
+		curEl = curEl->getNext();
 	}
 }
 
-void writeElement(element*& writeElement, std::ofstream& stream)
+void List::writeRect(std::ofstream& stream)
 {
-	switch (writeElement->itFigure->key)
+	auto curEl = this->head;
+	for (int i = 0; i < this->size; i++)
 	{
-	case rect:
-	{
-		writeRectangle((rectangle*)writeElement->itFigure, stream);
-		break;
+		if(curEl->getItFigure()->getKey()==rect)
+		curEl->writeElement(stream);
+		curEl = curEl->getNext();
 	}
-	case cir:
-	{
-		writeCircle((circle*)writeElement->itFigure, stream);
-		break;
-	}
-	case tri:
-	{
-		writeTriangle((triangle*)writeElement->itFigure, stream);
-		break;
-	}
-	default:
-		break;
-	}
-	return;
 }
 
-void writeRectangle(rectangle* rect, std::ofstream& stream)
+void List::writeCir(std::ofstream& stream)
 {
-	stream << "Left up x: " << rect->leftUp[0] << " Left up y: " << rect->leftUp[1] << "\n";
-	stream << "Right down x: " << rect->rightDown[0] << " Right down y: " << rect->rightDown[1] << "\n";
-	stream << "Color " << rect->color << "\n";
-	return;
+	auto curEl = this->head;
+	for (int i = 0; i < this->size; i++)
+	{
+		if (curEl->getItFigure()->getKey() == cir)
+			curEl->writeElement(stream);
+		curEl = curEl->getNext();
+	}
 }
 
-void writeCircle(circle* cir, std::ofstream& stream)
+void List::clear()
 {
-	stream << "Center: " << cir->center[0] << " " << cir->center[1] << "\n";
-	stream << "Radius " << cir->radius << "\n";
-	stream << "Color " << cir->color << "\n";
-}
-
-void writeTriangle(triangle* tri, std::ofstream& stream)
-{
-	stream << "First " << tri->first[0] << " " << tri->first[1] << "\n";
-	stream << "First " << tri->second[0] << " " << tri->second[1] << "\n";
-	stream << "First " << tri->third[0] << " " << tri->third[1] << "\n";
-	stream << "Color " << tri->color << "\n";
+	auto curEl = this->head;
+	while (curEl != nullptr)
+	{
+		this->setHead(this->head->getNext());
+		delete curEl;
+		curEl = this->head;
+	}
+	this->size = 0;
 }

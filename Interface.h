@@ -1,61 +1,82 @@
 #pragma once
 #include <string>
 #include <fstream>
-enum type{rect,cir,tri};
-struct triangle
+using namespace std;
+enum type { rect, cir };
+class Figure
 {
+protected:
 	type key;
-	int first[2];
-	int second[2];
-	int third[2];
 	std::string color;
+public:
+	 string getColor();
+	 type getKey();
+	virtual void writeFigure(std::ofstream& stream)=0;
+	virtual void readFigure(std::ifstream& stream)=0;
 };
-struct rectangle
+class Rectangle :public Figure
 {
-	type key;
+	
 	int leftUp[2];
 	int rightDown[2];
-	std::string color;
+public:
+	Rectangle();
+	int* getLeftUp();
+	int* getRightDown();
+	void writeFigure(std::ofstream& stream);
+	void readFigure(std::ifstream& stream);
 };
-struct circle
+class Circle : public Figure
 {
-	type key;
+	
 	int center[2];
 	int radius;
-	std::string color;
+	
+public:
+	Circle();
+	int* getCenter();
+	int getRadius();
+	void writeFigure(std::ofstream& stream);
+	void readFigure(std::ifstream& stream);
 };
-struct figure
+
+
+class Element
 {
-	type key;
-	std::string color;
+	Figure* itFigure;
+	Element* next;
+	Element* prev;
+public:
+	Element();
+	~Element();
+	void setItFigure(Figure* inItFigure);
+	void setNext(Element* inNext);
+	void setPrev(Element* inPrev);
+	Figure* getItFigure( );
+	Element* getNext( );
+	Element* getPrev();
+	void writeElement(std::ofstream& stream);
+	int readElement(std::ifstream& stream);
 };
 
-struct element
-{
-	figure* itFigure;
-	element* next;
-	element* prev;
-};
 
-
-struct list
+class List
 {
 	int size = 0;
-	element* head;
-	element* tail;
+	Element* head;
+	Element* tail;
+public:
+	List();
+	~List();
+	void setHead(Element* inHead);
+	void setTail(Element* inTail);
+	Element* getHead();
+	Element* getTail();
+	void pushBack(Element* newElement);
+	void pushFirst(Element* newElement);
+	void readList(std::ifstream& stream);
+	void writeList(std::ofstream& stream);
+	void writeRect(std::ofstream& stream);
+	void writeCir(std::ofstream& stream);
+	void clear();
 };
-
-void pushBack(list* oldList, element* newElement);
-void pushFirst(list* oldList, element* newElement);
-void init(list* curList);
-void clear(list* oldList);
-void readList(list*& readList, std::ifstream& stream);
-int readElement(element*& readElement, std::ifstream& stream);
-rectangle* readRectangle(std::ifstream& stream);
-circle* readCircle(std::ifstream& stream);
-triangle* readTriangle(std::ifstream& stream);
-void writeList(list*& readList, std::ofstream& stream);
-void writeElement(element*& readElement, std::ofstream& stream);
-void writeRectangle(rectangle* rect, std::ofstream& stream);
-void writeCircle(circle* cir, std::ofstream& stream);
-void writeTriangle(triangle* tri, std::ofstream& stream);
